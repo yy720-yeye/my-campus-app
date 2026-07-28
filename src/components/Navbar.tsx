@@ -71,9 +71,12 @@ export default function Navbar() {
             ))}
             {user ? (
               <div className="flex items-center gap-2 ml-3">
-                <span className="text-sm text-white font-medium">
+                <Link
+                  to="/profile"
+                  className="text-sm text-white font-medium hover:text-blue-200 transition-colors"
+                >
                   {user.username}
-                </span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="px-3 py-1.5 border border-white/60 rounded-lg text-xs text-white/80 hover:bg-white hover:text-[#1e3a5f] transition-colors"

@@ -30,6 +30,15 @@ export const API = {
   // 课程表
   schedules: getApiUrl('/api/schedules'),
 
+  // 个人中心
+  profile: {
+    info: getApiUrl('/api/profile'),
+    update: getApiUrl('/api/profile'),
+    items: getApiUrl('/api/profile/items'),
+    lostFound: getApiUrl('/api/profile/lost-found'),
+    deleteAccount: getApiUrl('/api/profile/account'),
+  },
+
   // AI 服务
   ai: {
     reviewSummary: getApiUrl('/api/ai/review-summary'),

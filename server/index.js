@@ -55,6 +55,7 @@ app.use('/api/lost-found', require('./routes/lost-found'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/schedules', require('./routes/schedules'));
+app.use('/api/profile', require('./routes/profile'));
 
 // ---------- 受保护测试路由：用于演示 401 ----------
 // 访问 /api/protected 需要携带有效的 Bearer token
