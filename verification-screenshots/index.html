@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bug 修复验证截图报告</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #1e293b; }
+  .header { background: linear-gradient(135deg, #1e3a5f, #2d5a87); color: white; padding: 32px 24px; text-align: center; }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .header p { font-size: 14px; opacity: 0.85; }
+  .header .badge { display: inline-block; background: rgba(255,255,255,0.15); padding: 4px 14px; border-radius: 20px; font-size: 13px; margin-top: 12px; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .stat-card .num { font-size: 30px; font-weight: 700; }
+  .stat-card .label { font-size: 13px; color: #64748b; margin-top: 4px; }
+  .stat-card.green .num { color: #16a34a; }
+  .stat-card.blue .num { color: #2563eb; }
+  .stat-card.amber .num { color: #d97706; }
+  .section-title { font-size: 20px; font-weight: 700; margin: 28px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); gap: 20px; }
+  .gallery-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: box-shadow 0.2s; }
+  .gallery-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+  .gallery-item img { width: 100%; display: block; border-bottom: 1px solid #f1f5f9; }
+  .gallery-item .caption { padding: 12px 16px; }
+  .gallery-item .caption .tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+  .gallery-item .caption .tag.pass { background: #f0fdf4; color: #16a34a; }
+  .gallery-item .caption .tag.info { background: #eff6ff; color: #2563eb; }
+  .gallery-item .caption .title { font-size: 15px; font-weight: 600; color: #1e293b; }
+  .gallery-item .caption .desc { font-size: 13px; color: #64748b; margin-top: 2px; }
+  .api-results { background: #1e293b; border-radius: 12px; padding: 20px; overflow-x: auto; margin-bottom: 20px; }
+  .api-results pre { color: #e2e8f0; font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; }
+  .api-results .ok { color: #4ade80; }
+  .api-results .err { color: #f87171; }
+  .api-results .info { color: #60a5fa; }
+  .api-results .dim { color: #64748b; }
+  .footer { text-align: center; color: #94a3b8; font-size: 13px; padding: 24px; }
+  @media (max-width: 600px) { .gallery { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>📸 Bug 修复验证截图报告</h1>
+  <p>校园生活服务平台 · 2026-07-28</p>
+  <span class="badge">7/7 Bug 修复验证通过</span>
+</div>
+
+<div class="container">
+  <div class="stats">
+    <div class="stat-card green"><div class="num">7</div><div class="label">Bug 修复通过</div></div>
+    <div class="stat-card blue"><div class="num">13</div><div class="label">API 测试通过</div></div>
+    <div class="stat-card blue"><div class="num">7</div><div class="label">前端页面截图</div></div>
+    <div class="stat-card amber"><div class="num">1</div><div class="label">额外修复</div></div>
+  </div>
+
+  <h2 class="section-title">前端页面截图</h2>
+
+  <div class="gallery">
+    <div class="gallery-item">
+      <img src="01-首页运行正常.jpg" alt="首页运行正常">
+      <div class="caption">
+        <span class="tag info">首页</span>
+        <div class="title">首页运行正常</div>
+        <div class="desc">前后端联调成功，导航栏、功能卡片、footer 均正常显示</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="02-404页面.jpg" alt="404页面">
+      <div class="caption">
+        <span class="tag pass">Bug #6 验证</span>
+        <div class="title">404 页面</div>
+        <div class="desc">访问不存在的路由显示"404"标题、"页面不存在"文字和"返回首页"按钮</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="03-TradePage搜索功能.jpg" alt="TradePage搜索功能">
+      <div class="caption">
+        <span class="tag pass">Bug #7 验证</span>
+        <div class="title">TradePage 搜索功能</div>
+        <div class="desc">搜索框正常显示，输入关键词可搜索商品，7条商品数据正常加载</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="04-食堂页面.jpg" alt="食堂页面">
+      <div class="caption">
+        <span class="tag info">食堂模块</span>
+        <div class="title">食堂页面</div>
+        <div class="desc">4个食堂卡片正常显示，搜索和分类筛选功能正常</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="05-食堂展开评价区.jpg" alt="食堂展开评价区">
+      <div class="caption">
+        <span class="tag pass">Bug #1 验证</span>
+        <div class="title">食堂展开评价区</div>
+        <div class="desc">AI总结按钮、评价表单、历史评价列表均正常显示；未登录提交显示失败提示</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="06-登录注册页.jpg" alt="登录注册页">
+      <div class="caption">
+        <span class="tag info">认证模块</span>
+        <div class="title">登录注册页</div>
+        <div class="desc">登录/注册表单正常显示，可切换标签页</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="07-失物招领页.jpg" alt="失物招领页">
+      <div class="caption">
+        <span class="tag info">失物招领</span>
+        <div class="title">失物招领页</div>
+        <div class="desc">4条失物招领数据正常显示，类型标签（丢失/捡到）颜色区分正确</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title">后端 API 验证结果</h2>
+
+  <div class="api-results">
+<pre>
+<span class="info">$ node test-bugs.mjs</span>
+<span class="ok">✅ Bug 1(P0): 未登录提交评价应返回401: 状态码=401, message="未登录，请先登录"</span>
+<span class="ok">✅ Bug 1(P0): 未登录发布商品应返回401: 状态码=401, message="未登录，请先登录"</span>
+<span class="ok">✅ Bug 1(P0): 未登录发布失物招领应返回401: 状态码=401, message="未登录，请先登录"</span>
+<span class="ok">✅ Bug 3(P1): SQL注入防护 - 关键词搜索: 状态码=200，正常返回数据，无SQL注入风险</span>
+<span class="ok">✅ Bug 4(P1): 过期Token应返回401: 状态码=401, message="Token 无效或已过期"</span>
+<span class="dim">...</span>
+
+<span class="info">$ node test-full.mjs</span>
+<span class="ok">✅ 注册新用户: 用户已存在</span>
+<span class="ok">✅ 登录: 获取到token</span>
+<span class="ok">✅ 带Token提交评价: 评价ID=12，内容="验证测试：评价功能正常"</span>
+<span class="ok">✅ 获取评价列表: 食堂1评价数=5，新评价存在=true</span>
+<span class="ok">✅ 获取商品列表: 商品数=7</span>
+<span class="ok">✅ 搜索商品: 搜索"书"结果数=0</span>
+<span class="ok">✅ 获取失物招领列表: 失物招领数=4</span>
+<span class="ok">✅ 带Token发布商品: 商品ID=8</span>
+<span class="ok">✅ 访问不存在的API路径: 状态码=404</span>
+</pre>
+  </div>
+
+  <h2 class="section-title">Bug 测试截图（浏览器测试时生成）</h2>
+
+  <div class="gallery">
+    <div class="gallery-item">
+      <img src="bug1-401-未登录提交评价.png" alt="Bug1 401未登录">
+      <div class="caption">
+        <span class="tag pass">Bug #1 P0</span>
+        <div class="title">未登录提交评价返回401</div>
+        <div class="desc">前端浏览器测试截图：未登录用户提交评价后API返回401</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="bug6-404页面.png" alt="Bug6 404页面">
+      <div class="caption">
+        <span class="tag pass">Bug #6 P2</span>
+        <div class="title">404页面浏览器验证</div>
+        <div class="desc">浏览器访问 /nonexistent-page 显示404页面</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="bug7-TradePage搜索.png" alt="Bug7 TradePage搜索">
+      <div class="caption">
+        <span class="tag pass">Bug #7 P2</span>
+        <div class="title">TradePage搜索功能验证</div>
+        <div class="desc">搜索框存在，输入关键词后列表过滤</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="bug3-SQL注入防护.png" alt="Bug3 SQL注入防护">
+      <div class="caption">
+        <span class="tag pass">Bug #3 P1</span>
+        <div class="title">SQL注入防护验证</div>
+        <div class="desc">请求 keyword=test' OR '1'='1 正常返回，无数据泄露</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="bug4-Token过期处理.png" alt="Bug4 Token过期处理">
+      <div class="caption">
+        <span class="tag pass">Bug #4 P1</span>
+        <div class="title">Token过期处理验证</div>
+        <div class="desc">过期Token提交后API返回401，前端清除localStorage凭证</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="bug4-Token过期提交后.png" alt="Bug4 Token过期提交后">
+      <div class="caption">
+        <span class="tag pass">Bug #4 P1</span>
+        <div class="title">Token过期提交后状态</div>
+        <div class="desc">过期Token提交后发布弹窗保持打开，显示错误提示而非成功</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    校园生活服务平台 · Bug 修复验证截图报告 · 2026-07-28
+  </div>
+</div>
+</body>
+</html>

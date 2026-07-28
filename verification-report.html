@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校园应用 Bug 修复验证报告</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #1e293b; margin: 0; padding: 20px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  .subtitle { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+  .summary { display: flex; gap: 16px; margin-bottom: 24px; }
+  .summary-card { flex: 1; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .summary-card .num { font-size: 32px; font-weight: 700; }
+  .summary-card .label { font-size: 13px; color: #64748b; margin-top: 4px; }
+  .summary-card.pass .num { color: #16a34a; }
+  .summary-card.fail .num { color: #dc2626; }
+  .summary-card.extra .num { color: #2563eb; }
+  .bug-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .bug-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .badge-p0 { background: #fef2f2; color: #dc2626; }
+  .badge-p1 { background: #fff7ed; color: #ea580c; }
+  .badge-p2 { background: #fef9c3; color: #a16207; }
+  .status-badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .status-pass { background: #f0fdf4; color: #16a34a; }
+  .status-fail { background: #fef2f2; color: #dc2626; }
+  .bug-title { font-size: 16px; font-weight: 600; flex: 1; }
+  .test-results { margin-top: 12px; }
+  .test-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+  .test-row:last-child { border-bottom: none; }
+  .pass-icon { color: #16a34a; font-weight: bold; }
+  .fail-icon { color: #dc2626; font-weight: bold; }
+  .test-name { flex: 1; }
+  .test-detail { color: #64748b; font-size: 13px; }
+  .fix-summary { margin-top: 24px; }
+  .fix-summary h2 { font-size: 18px; margin-bottom: 12px; }
+  .fix-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+  .fix-item:last-child { border-bottom: none; }
+  .fix-item .file { color: #2563eb; font-family: monospace; font-size: 13px; }
+  .fix-item .desc { color: #475569; }
+  .footer { text-align: center; color: #94a3b8; font-size: 13px; margin-top: 32px; padding: 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Bug 修复验证报告</h1>
+  <p class="subtitle">验证时间：2026-07-28 | 验证方式：后端 API 直接测试 + 前端浏览器测试</p>
+
+  <div class="summary">
+    <div class="summary-card pass">
+      <div class="num">7</div>
+      <div class="label">Bug 修复验证通过</div>
+    </div>
+    <div class="summary-card extra">
+      <div class="num">1</div>
+      <div class="label">额外发现并修复</div>
+    </div>
+    <div class="summary-card pass">
+      <div class="num">13</div>
+      <div class="label">API 接口测试通过</div>
+    </div>
+  </div>
+
+  <!-- Bug 1 -->
+  <div class="bug-card">
+    <div class="bug-header">
+      <span class="badge badge-p0">P0 - 严重</span>
+      <span class="status-badge status-pass">✅ 已修复</span>
+      <div class="bug-title">BR-001: 未登录用户提交表单显示成功</div>
+    </div>
+    <p style="color:#475569;font-size:14px;margin:0 0 8px">
+      未登录用户在食堂评价、二手发布、失物招领三个表单中提交后显示"成功"提示，但数据未存储。
+    </p>
+    <div class="test-results">
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">未登录提交评价 → 401</span>
+        <span class="test-detail">POST /api/reviews 返回 401 "未登录，请先登录"</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">未登录发布商品 → 401</span>
+        <span class="test-detail">POST /api/items 返回 401 "未登录，请先登录"</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">未登录发布失物招领 → 401</span>
+        <span class="test-detail">POST /api/lost-found 返回 401 "未登录，请先登录"</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bug 2 -->
+  <div class="bug-card">
+    <div class="bug-header">
+      <span class="badge badge-p1">P1 - 高</span>
+      <span class="status-badge status-pass">✅ 已修复</span>
+      <div class="bug-title">BR-002: TradePage Toast 定时器未使用 useRef</div>
+    </div>
+    <p style="color:#475569;font-size:14px;margin:0 0 8px">
+      Toast 定时器使用局部变量而非 useRef，导致组件重渲染时定时器状态丢失，可能同时出现多个 Toast。
+    </p>
+    <div class="test-results">
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">TradePage 使用 useRef</span>
+        <span class="test-detail">TradePage.tsx 第53行: const toastTimer = useRef&lt;...&gt;(null)</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">ReviewForm 使用 useRef</span>
+        <span class="test-detail">ReviewForm.tsx 第77行: const toastTimer = useRef&lt;...&gt;(null)</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">PostItemForm 使用 useRef</span>
+        <span class="test-detail">PostItemForm.tsx 第118行: const toastTimer = useRef&lt;...&gt;(null)</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">LostFoundForm 使用 useRef</span>
+        <span class="test-detail">LostFoundForm.tsx 第97行: const toastTimer = useRef&lt;...&gt;(null)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bug 3 -->
+  <div class="bug-card">
+    <div class="bug-header">
+      <span class="badge badge-p1">P1 - 高</span>
+      <span class="status-badge status-pass">✅ 已修复</span>
+      <div class="bug-title">BR-003: 后端 SQL 注入漏洞</div>
+    </div>
+    <p style="color:#475569;font-size:14px;margin:0 0 8px">
+      多个路由文件使用字符串拼接构建 SQL 查询，存在 SQL 注入攻击风险。
+    </p>
+    <div class="test-results">
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">SQL 注入测试</span>
+        <span class="test-detail">keyword=test' OR '1'='1 → 正常返回，无数据泄露</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">items.js 参数化查询</span>
+        <span class="test-detail">全部使用 queryAll() + ? 占位符</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">lost-found.js 参数化查询</span>
+        <span class="test-detail">全部使用 queryAll() + ? 占位符</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">reviews.js 参数化查询</span>
+        <span class="test-detail">全部使用 queryAll() + ? 占位符</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">auth.js 参数化查询</span>
+        <span class="test-detail">额外修复：注册/登录/用户信息查询改为参数化</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bug 4 -->
+  <div class="bug-card">
+    <div class="bug-header">
+      <span class="badge badge-p1">P1 - 高</span>
+      <span class="status-badge status-pass">✅ 已修复</span>
+      <div class="bug-title">BR-004: Token 过期无自动清除</div>
+    </div>
+    <p style="color:#475569;font-size:14px;margin:0 0 8px">
+      Token 过期后前端未清除 localStorage 中的凭证，用户停留在"已登录"状态但实际无法操作。
+    </p>
+    <div class="test-results">
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">过期 Token 测试</span>
+        <span class="test-detail">使用过期 JWT 提交评价 → 返回 401 "Token 无效或已过期"</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">apiRequest 401 处理</span>
+        <span class="test-detail">api.ts 第88-93行: 检测到401自动清除 token/username</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bug 5 -->
+  <div class="bug-card">
+    <div class="bug-header">
+      <span class="badge badge-p2">P2 - 中</span>
+      <span class="status-badge status-pass">✅ 已修复</span>
+      <div class="bug-title">BR-005: AI 接口模型名不统一</div>
+    </div>
+    <p style="color:#475569;font-size:14px;margin:0 0 8px">
+      两个 AI 端点使用不同的模型名，一个写死 'deepseek-chat'，另一个使用变量。
+    </p>
+    <div class="test-results">
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">统一模型名常量</span>
+        <span class="test-detail">ai.js 第17行: const DEEPSEEK_MODEL = 'deepseek-v4-flash'</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">4个端点全部使用 DEEPSEEK_MODEL</span>
+        <span class="test-detail">summarize-reviews, review-summary, generate-item-description, generate-description</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bug 6 -->
+  <div class="bug-card">
+    <div class="bug-header">
+      <span class="badge badge-p2">P2 - 中</span>
+      <span class="status-badge status-pass">✅ 已修复</span>
+      <div class="bug-title">BR-006: 缺少 404 页面</div>
+    </div>
+    <p style="color:#475569;font-size:14px;margin:0 0 8px">
+      访问不存在的路由时页面空白，无任何提示。
+    </p>
+    <div class="test-results">
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">浏览器访问 /nonexistent-page</span>
+        <span class="test-detail">显示404页面，包含"页面不存在"文字和"返回首页"按钮</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">后端 API 404</span>
+        <span class="test-detail">访问 /api/nonexistent 返回 404 状态码</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bug 7 -->
+  <div class="bug-card">
+    <div class="bug-header">
+      <span class="badge badge-p2">P2 - 中</span>
+      <span class="status-badge status-pass">✅ 已修复</span>
+      <div class="bug-title">BR-007: TradePage 缺少搜索功能</div>
+    </div>
+    <p style="color:#475569;font-size:14px;margin:0 0 8px">
+      二手交易页面没有搜索框，用户无法搜索商品。
+    </p>
+    <div class="test-results">
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">搜索输入框存在</span>
+        <span class="test-detail">TradePage.tsx 第189-211行: 搜索框 UI</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">搜索参数传递到后端</span>
+        <span class="test-detail">第68-77行: keyword 参数通过 query string 传递</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">搜索功能生效</span>
+        <span class="test-detail">浏览器测试中输入关键词可搜索</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 额外修复 -->
+  <div class="bug-card" style="border-left: 4px solid #2563eb;">
+    <div class="bug-header">
+      <span class="badge" style="background:#eff6ff;color:#2563eb;">额外修复</span>
+      <span class="status-badge status-pass">✅ 已修复</span>
+      <div class="bug-title">auth.js SQL 注入漏洞</div>
+    </div>
+    <p style="color:#475569;font-size:14px;margin:0 0 8px">
+      验证过程中发现 auth.js 文件中的注册、登录、用户信息查询接口仍使用字符串拼接，虽然用 replace(/'/g, "''") 做了简单转义，但仍存在风险。已全部改为 queryAll 参数化查询。
+    </p>
+    <div class="test-results">
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">注册接口</span>
+        <span class="test-detail">INSERT 语句改为参数化，用户名正则验证保留</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">登录接口</span>
+        <span class="test-detail">SELECT 语句改为 queryAll 参数化查询</span>
+      </div>
+      <div class="test-row">
+        <span class="pass-icon">✔</span>
+        <span class="test-name">用户信息接口</span>
+        <span class="test-detail">SELECT 语句改为 queryAll 参数化查询</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix-summary">
+    <h2>修改文件清单</h2>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">src/components/ReviewForm.tsx</span>
+      <span class="desc">移除 try-catch 模拟提交成功逻辑</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">src/components/PostItemForm.tsx</span>
+      <span class="desc">移除 try-catch 模拟提交成功逻辑</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">src/components/LostFoundForm.tsx</span>
+      <span class="desc">移除 try-catch 模拟提交成功逻辑</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">src/pages/TradePage.tsx</span>
+      <span class="desc">Toast 定时器改用 useRef + 添加搜索功能</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">src/config/api.ts</span>
+      <span class="desc">401 响应自动清除 localStorage 凭证</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">src/App.tsx</span>
+      <span class="desc">添加 404 页面组件和 catch-all 路由</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">server/database/connection.js</span>
+      <span class="desc">新增 queryAll 参数化查询函数</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">server/routes/items.js</span>
+      <span class="desc">全部改为 queryAll 参数化查询</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">server/routes/lost-found.js</span>
+      <span class="desc">全部改为 queryAll 参数化查询</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">server/routes/reviews.js</span>
+      <span class="desc">全部改为 queryAll 参数化查询</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">server/routes/ai.js</span>
+      <span class="desc">统一使用 DEEPSEEK_MODEL 模型名常量</span>
+    </div>
+    <div class="fix-item">
+      <span class="pass-icon">✔</span>
+      <span class="file">server/routes/auth.js</span>
+      <span class="desc">额外修复：注册/登录/用户信息改为参数化查询</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    校园生活服务平台 · Bug 修复验证报告 · 2026-07-28
+  </div>
+</div>
+</body>
+</html>

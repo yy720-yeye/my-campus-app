@@ -93,7 +93,6 @@ export default function CanteenPage() {
   // ---------- AI 总结状态 ----------
   const [aiLoadingId, setAiLoadingId] = useState<number | null>(null)
   const [aiSummaries, setAiSummaries] = useState<Record<number, string>>({})
-  const [aiErrors, setAiErrors] = useState<Record<number, string>>({})
 
   // ---------- Toast 状态 ----------
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error'; visible: boolean }>({
@@ -174,7 +173,6 @@ export default function CanteenPage() {
     }
 
     setAiLoadingId(canteenId)
-    setAiErrors((prev) => ({ ...prev, [canteenId]: '' }))
 
     try {
       const res = await apiRequest<{ summary: string }>(API.ai.summarizeReviews, 'POST', { canteen_id: canteenId })
