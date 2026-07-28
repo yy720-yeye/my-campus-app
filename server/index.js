@@ -52,8 +52,8 @@ app.set('db', {
 initDatabase()
   .then(() => {
     console.log('数据库初始化成功');
-    app.listen(PORT, () => {
-      console.log(`后端服务器运行在 http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`后端服务器运行在 http://0.0.0.0:${PORT}`);
     });
   })
   .catch((err) => {
