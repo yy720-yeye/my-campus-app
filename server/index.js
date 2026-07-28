@@ -4,6 +4,7 @@ require('dotenv').config();
 require('dotenv').config({ path: __dirname + '/.env' });
 
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const initDatabase = require('./database/init');
 const { getDb, closeDb } = require('./database/connection');
@@ -21,6 +22,10 @@ app.use((req, res, next) => {
   next();
 });
 
+// ---------- 静态文件服务 ----------
+// 提供前端构建产物（dist 目录）的静态文件服务
+app.use(express.static(path.join(__dirname, '..', 'dist')));
+
 // ---------- 路由 ----------
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/canteens', require('./routes/canteens'));
@@ -37,6 +42,12 @@ app.get('/api/protected', authMiddleware, (req, res) => {
     data: { user: req.user, message: '你已登录，可以访问受保护资源' },
     message: 'success',
   });
+});
+
+// ---------- SPA 回退路由 ----------
+// 所有非 API 请求返回 index.html，支持前端路由（如 /canteen, /trade 等）
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
 });
 
 // ---------- 启动服务器 ----------
