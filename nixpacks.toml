@@ -2,7 +2,10 @@
 # Override default Node.js version and install command
 
 [phases.setup]
-nixPkgs = ["nodejs_22"]
+nixPkgs = ["nodejs_23"]
 
 [phases.install]
 cmds = ["npm install"]
+
+[phases.build]
+cmds = ["npm run build"]

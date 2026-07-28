@@ -5,10 +5,31 @@ require('dotenv').config({ path: __dirname + '/.env' });
 
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
+const { execSync } = require('child_process');
 const cors = require('cors');
 const initDatabase = require('./database/init');
 const { getDb, closeDb } = require('./database/connection');
 const { authMiddleware } = require('./middleware/auth');
+
+// ---------- 自动构建前端 ----------
+// 如果 dist 目录不存在或缺少 index.html，则自动执行前端构建
+const distPath = path.join(__dirname, '..', 'dist');
+const distIndexPath = path.join(distPath, 'index.html');
+if (!fs.existsSync(distPath) || !fs.existsSync(distIndexPath)) {
+  console.log('检测到前端未构建，正在自动构建...');
+  try {
+    execSync('npm run build', {
+      cwd: path.join(__dirname, '..'),
+      stdio: 'inherit',
+      env: { ...process.env, NODE_ENV: 'production' },
+    });
+    console.log('前端构建完成');
+  } catch (err) {
+    console.error('前端自动构建失败:', err.message);
+    process.exit(1);
+  }
+}
 
 const app = express();
 
@@ -46,8 +67,17 @@ app.get('/api/protected', authMiddleware, (req, res) => {
 
 // ---------- SPA 回退路由 ----------
 // 所有非 API 请求返回 index.html，支持前端路由（如 /canteen, /trade 等）
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+// 使用 app.use 而非 app.get('*', ...) 以兼容 Express 5 的路由语法
+app.use((req, res) => {
+  // 跳过 API 路径，避免干扰 API 错误处理
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ code: 404, data: null, message: '接口不存在' });
+  }
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'), (err) => {
+    if (err) {
+      res.status(500).send('前端资源未构建，请运行 npm run build');
+    }
+  });
 });
 
 // ---------- 启动服务器 ----------

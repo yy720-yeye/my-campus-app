@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "server": "node server/index.js",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "postinstall": "npm run build"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
@@ -30,5 +31,11 @@
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.1",
     "sql.js": "^1.14.1"
+  },
+  "optionalDependencies": {
+    "lightningcss-win32-x64-msvc": "^1.33.0",
+    "lightningcss-linux-x64-gnu": "^1.33.0",
+    "@rolldown/binding-linux-x64-gnu": "^1.1.5",
+    "@rolldown/binding-win32-x64-msvc": "^1.1.5"
   }
 }
