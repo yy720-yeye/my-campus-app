@@ -1,0 +1,8 @@
+# Nixpacks configuration for Railway deployment
+# Override default Node.js version and install command
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm install"]
