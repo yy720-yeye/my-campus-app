@@ -1,15 +1,15 @@
 // 加载 .env 环境变量（必须在最前面）
 // 先加载项目根目录 .env，再加载 server/.env（后者覆盖同名变量）
-require('dotenv').config();
-require('dotenv').config({ path: __dirname + '/.env' });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const express = require('express');
-const path = require('path');
 const fs = require('fs');
 const { execSync } = require('child_process');
 const cors = require('cors');
 const initDatabase = require('./database/init');
-const { getDb, closeDb } = require('./database/connection');
+const { getDb, saveDb, closeDb, queryAll } = require('./database/connection');
 const { authMiddleware } = require('./middleware/auth');
 
 // ---------- 自动构建前端 ----------
@@ -54,6 +54,7 @@ app.use('/api/items', require('./routes/items'));
 app.use('/api/lost-found', require('./routes/lost-found'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/ai', require('./routes/ai'));
+app.use('/api/schedules', require('./routes/schedules'));
 
 // ---------- 受保护测试路由：用于演示 401 ----------
 // 访问 /api/protected 需要携带有效的 Bearer token
@@ -86,7 +87,9 @@ const PORT = process.env.PORT || 3001;
 // 将数据库实例挂载到 app 上，方便路由文件通过 req.app.get('db') 获取
 app.set('db', {
   getDb,
+  saveDb,
   closeDb,
+  queryAll,
 });
 
 // 初始化数据库后启动服务器

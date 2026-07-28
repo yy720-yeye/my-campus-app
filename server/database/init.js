@@ -37,6 +37,20 @@ async function initDatabase() {
   // ============================================================
   // 2. 课表表
   // ============================================================
+  // 先尝试添加新列（兼容已有数据库的情况）
+  try {
+    db.run("ALTER TABLE courses ADD COLUMN reminder_enabled INTEGER DEFAULT 1");
+  } catch (e) { /* 列已存在则忽略 */ }
+  try {
+    db.run("ALTER TABLE courses ADD COLUMN reminder_minutes INTEGER DEFAULT 15");
+  } catch (e) { /* 列已存在则忽略 */ }
+  try {
+    db.run("ALTER TABLE courses ADD COLUMN weeks TEXT DEFAULT '[]'");
+  } catch (e) { /* 列已存在则忽略 */ }
+  try {
+    db.run("ALTER TABLE courses ADD COLUMN color TEXT DEFAULT ''");
+  } catch (e) { /* 列已存在则忽略 */ }
+
   db.run(`
     CREATE TABLE IF NOT EXISTS courses (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,6 +62,10 @@ async function initDatabase() {
       start_time TEXT,
       end_time TEXT,
       semester TEXT,
+      reminder_enabled INTEGER DEFAULT 1,
+      reminder_minutes INTEGER DEFAULT 15,
+      weeks TEXT DEFAULT '[]',
+      color TEXT DEFAULT '',
       created_at TEXT DEFAULT (datetime('now', 'localtime')),
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
@@ -183,6 +201,31 @@ async function initDatabase() {
       (9, 4, 4.5, '炖汤真材实料，排骨玉米汤很好喝。', '2025-03-22')
     `);
     console.log('[数据库] 评价初始数据 OK');
+  }
+
+  // ============================================================
+  // 7. 课表初始数据（汉语国际教育专业课表）
+  // ============================================================
+  // 检查是否已有课表数据
+  const courseCount = db.exec("SELECT COUNT(*) as count FROM courses");
+  if (courseCount.length === 0 || courseCount[0].values[0][0] === 0) {
+    // 颜色数组用于在课表上区分不同课程
+    const defaultWeeks = JSON.stringify([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
+    db.run(`INSERT INTO courses (user_id, course_name, teacher, classroom, day_of_week, start_time, end_time, semester, reminder_enabled, reminder_minutes, weeks, color) VALUES
+      (1, '现代汉语', '张教授', '教学楼A201', 1, '08:00', '09:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#4F46E5'),
+      (1, '大学英语', '李老师', '教学楼B302', 1, '10:00', '11:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#059669'),
+      (1, '对外汉语教学法', '孙老师', '教学楼B201', 1, '14:00', '15:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#D97706'),
+      (1, '古代文学', '王教授', '教学楼A103', 2, '08:00', '09:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#DC2626'),
+      (1, '中国文化概论', '刘教授', '教学楼A103', 2, '10:00', '11:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#7C3AED'),
+      (1, '语言学概论', '赵教授', '教学楼A301', 3, '08:00', '09:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#0891B2'),
+      (1, '现当代文学', '陈教授', '教学楼A201', 3, '14:00', '15:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#E11D48'),
+      (1, '书法与篆刻', '周老师', '艺术楼201', 4, '08:00', '09:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#65A30D'),
+      (1, '大学英语', '李老师', '教学楼B302', 4, '10:00', '11:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#059669'),
+      (1, '现代汉语', '张教授', '教学楼A201', 4, '14:00', '15:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#4F46E5'),
+      (1, '古代文学', '王教授', '教学楼A103', 5, '08:00', '09:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#DC2626'),
+      (1, '现当代文学', '陈教授', '教学楼A201', 5, '10:00', '11:40', '2025-2026-2', 1, 15, '${defaultWeeks}', '#E11D48')
+    `);
+    console.log('[数据库] 课表初始数据 OK（汉语国际教育专业课表）');
   }
 
   // 持久化到磁盘

@@ -27,6 +27,9 @@ export const API = {
     login: getApiUrl('/api/auth/login'),
   },
 
+  // 课程表
+  schedules: getApiUrl('/api/schedules'),
+
   // AI 服务
   ai: {
     reviewSummary: getApiUrl('/api/ai/review-summary'),
