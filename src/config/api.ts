@@ -84,10 +84,11 @@ export async function apiRequest<T = unknown>(
   // 发起请求
   const response = await fetch(url, options);
 
-  // 401: Token 过期或未登录，清除本地凭证
+  // 401: Token 过期或未登录，清除本地凭证并通知各组件更新状态
   if (response.status === 401) {
     localStorage.removeItem('token');
-    localStorage.removeItem('username');
+    localStorage.removeItem('user');
+    window.dispatchEvent(new Event('auth-change'));
     const errResult: ApiResponse<T> = await response.json();
     throw errResult;
   }

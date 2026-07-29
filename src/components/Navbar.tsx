@@ -12,7 +12,7 @@ const navLinks = [
 export default function Navbar() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const [user, setUser] = useState<{ username: string } | null>(null)
+  const [user, setUser] = useState<{ id: number; username: string; nickname: string } | null>(null)
 
   // 从 localStorage 读取用户信息
   const loadUser = () => {
@@ -75,7 +75,7 @@ export default function Navbar() {
                   to="/profile"
                   className="text-sm text-white font-medium hover:text-blue-200 transition-colors"
                 >
-                  {user.username}
+                  {user.nickname || user.username}
                 </Link>
                 <button
                   onClick={handleLogout}

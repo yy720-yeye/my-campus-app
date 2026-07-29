@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { API, apiRequest } from '../api'
 
 // ============================================================
@@ -32,6 +32,12 @@ function Toast({ message, type, visible }: { message: string; type: 'success' | 
 
 export default function AuthPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // 从 URL 中获取 redirect 参数（登录/注册成功后跳转到该页面）
+  const searchParams = new URLSearchParams(location.search)
+  const redirectTo = searchParams.get('redirect') || '/'
+
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
 
   // ---------- Toast ----------
@@ -85,14 +91,19 @@ export default function AuthPage() {
         { username: loginForm.username.trim(), password: loginForm.password }
       )
 
-      // 存储 token 和用户信息到 localStorage
+      // 存储 token 和完整用户信息到 localStorage
+      const userData = {
+        id: res.data.user.id,
+        username: res.data.user.username,
+        nickname: res.data.user.nickname || res.data.user.username,
+      }
       localStorage.setItem('token', res.data.token)
-      localStorage.setItem('user', JSON.stringify({ username: res.data.user.nickname || res.data.user.username }))
+      localStorage.setItem('user', JSON.stringify(userData))
       // 触发 auth 变更事件，通知 Navbar 更新
       window.dispatchEvent(new Event('auth-change'))
 
       showToast('登录成功！', 'success')
-      setTimeout(() => navigate('/'), 1000)
+      setTimeout(() => navigate(decodeURIComponent(redirectTo), { replace: true }), 1000)
     } catch (err: unknown) {
       const error = err as { message?: string }
       showToast(error.message || '用户名或密码错误', 'error')

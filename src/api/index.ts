@@ -25,6 +25,7 @@ export const API = {
   auth: {
     register: getApiUrl('/api/auth/register'),
     login: getApiUrl('/api/auth/login'),
+    me: getApiUrl('/api/auth/me'),
   },
 
   // 课程表

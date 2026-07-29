@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import Layout from './components/Layout'
+import AuthGuard from './components/AuthGuard'
 import HomePage from './pages/HomePage'
 import SchedulePage from './pages/SchedulePage'
 import CanteenPage from './pages/CanteenPage'
@@ -45,7 +46,7 @@ export default function App() {
           <Route path="/trade" element={<TradePage />} />
           <Route path="/lost-found" element={<LostFoundPage />} />
           <Route path="/auth" element={<AuthPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<AuthGuard><ProfilePage /></AuthGuard>} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
