@@ -242,11 +242,17 @@ export default function ProfilePage() {
       const res = await apiRequest<UserInfo>(API.profile.info, 'GET')
       setUser(res.data)
     } catch {
+      // 如果 token 已被清除（apiRequest 在 401 时会自动清除），直接跳转到登录页
+      const token = localStorage.getItem('token')
+      if (!token) {
+        navigate('/auth')
+        return
+      }
       setError(true)
     } finally {
       setLoading(false)
     }
-  }, [checkAuth])
+  }, [checkAuth, navigate])
 
   // ---------- 获取我的商品 ----------
   const fetchMyItems = useCallback(async () => {
@@ -256,11 +262,17 @@ export default function ProfilePage() {
       const res = await apiRequest<{ items: UserItem[] }>(url, 'GET')
       setMyItems(res.data.items)
     } catch {
+      // 如果 token 已被清除，跳转到登录页
+      const token = localStorage.getItem('token')
+      if (!token) {
+        navigate('/auth')
+        return
+      }
       showToast('获取商品列表失败', 'error')
     } finally {
       setItemsLoading(false)
     }
-  }, [itemFilter, showToast])
+  }, [itemFilter, showToast, navigate])
 
   // ---------- 获取我的失物招领 ----------
   const fetchMyLostFound = useCallback(async () => {
@@ -269,11 +281,30 @@ export default function ProfilePage() {
       const res = await apiRequest<{ items: UserLostFound[] }>(API.profile.lostFound, 'GET')
       setMyLostFound(res.data.items)
     } catch {
+      // 如果 token 已被清除，跳转到登录页
+      const token = localStorage.getItem('token')
+      if (!token) {
+        navigate('/auth')
+        return
+      }
       showToast('获取失物招领记录失败', 'error')
     } finally {
       setLfLoading(false)
     }
-  }, [showToast])
+  }, [showToast, navigate])
+
+  // ---------- 监听登出事件 ----------
+  // 当其他页面触发登出（auth-change 事件）时，跳转到登录页
+  useEffect(() => {
+    const handleAuthChange = () => {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        navigate('/auth')
+      }
+    }
+    window.addEventListener('auth-change', handleAuthChange)
+    return () => window.removeEventListener('auth-change', handleAuthChange)
+  }, [navigate])
 
   // ---------- 初始加载 ----------
   useEffect(() => {
@@ -296,6 +327,12 @@ export default function ProfilePage() {
       setNicknameDialogOpen(false)
       fetchUserInfo()
     } catch {
+      // 如果 token 已被清除，跳转到登录页
+      const token = localStorage.getItem('token')
+      if (!token) {
+        navigate('/auth')
+        return
+      }
       showToast('修改失败，请重试', 'error')
     }
   }
@@ -310,6 +347,12 @@ export default function ProfilePage() {
       fetchMyItems()
       fetchUserInfo()
     } catch {
+      // 如果 token 已被清除，跳转到登录页
+      const token = localStorage.getItem('token')
+      if (!token) {
+        navigate('/auth')
+        return
+      }
       showToast('操作失败', 'error')
     }
   }
@@ -384,15 +427,23 @@ export default function ProfilePage() {
           </div>
           <p className="text-lg text-gray-600 mb-1">加载失败</p>
           <p className="text-sm text-gray-400 mb-6">请检查网络连接后重试</p>
-          <button
-            onClick={fetchUserInfo}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            重新加载
-          </button>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={fetchUserInfo}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              重新加载
+            </button>
+            <Link
+              to="/auth"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              重新登录
+            </Link>
+          </div>
         </div>
       </div>
     )
